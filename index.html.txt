@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 스쿨 타로 메이트</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poor+Story&family=Sunflower:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --main-purple: #6C5CE7;
+            --light-purple: #A29BFE;
+            --dark-purple: #4834D4;
+            --bg-purple: #F8F7FF;
+            --accent-pink: #FF8787;
+        }
+
+        body {
+            font-family: 'Poor Story', cursive, sans-serif;
+            background-color: var(--bg-purple);
+            color: #2D3436;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3 {
+            color: var(--dark-purple);
+            font-family: 'Sunflower', sans-serif;
+        }
+
+        .page { display: none; }
+        .active { display: block; }
+
+        /* 버튼 스타일 */
+        button {
+            background-color: var(--main-purple);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Poor Story', cursive;
+            margin: 10px;
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+        }
+
+        button:hover {
+            background-color: var(--dark-purple);
+            transform: scale(1.05);
+        }
+
+        /* 인풋 스타일 */
+        input {
+            padding: 12px;
+            width: 80%;
+            border: 2px solid var(--light-purple);
+            border-radius: 12px;
+            margin: 8px 0;
+            font-size: 16px;
+            outline: none;
+        }
+
+        /* 타로 카드 회전 휠 모션 */
+        .card-circle-container {
+            position: relative;
+            height: 320px;
+            margin: 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tarot-wheel {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            animation: spin 20s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .wheel-card {
+            position: absolute;
+            width: 45px;
+            height: 75px;
+            background: linear-gradient(135deg, var(--main-purple), var(--dark-purple));
+            border: 2px solid white;
+            border-radius: 6px;
+            left: 118px;
+            top: 0;
+            transform-origin: 22.5px 140px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .wheel-card:hover {
+            background: var(--accent-pink);
+        }
+
+        /* 타로 카드 디자인 */
+        .tarot-card-display {
+            width: 150px;
+            height: 250px;
+            background: linear-gradient(135deg, #E8E8FF, #C7C1FF);
+            border: 4px solid var(--main-purple);
+            border-radius: 16px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-title-tag {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            background: var(--main-purple);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* 결과 상자 */
+        .result-box {
+            background: var(--bg-purple);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: left;
+            margin-top: 20px;
+            border-left: 5px solid var(--main-purple);
+        }
+
+        .grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #E2E2E2;
+        }
+
+        /* 도감 및 저장함 그리드 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .grid-card-item {
+            background: #F1F0FF;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .grid-card-item:hover {
+            border-color: var(--main-purple);
+        }
+
+        /* 댓글창 */
+        .comment-section {
+            margin-top: 30px;
+            border-top: 2px dashed var(--light-purple);
+            padding-top: 20px;
+        }
+        .comment-list {
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .comment-item {
+            background: #F1F0FF;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="page-login" class="page active">
+            <h1>🔮 스쿨 타로 메이트</h1>
+            <p>친구들과 함께하는 신나는 학교생활 타로점! ✨</p>
+            <div style="margin-top: 30px;">
+                <input type="text" id="input-id" placeholder="아이디를 입력해줘 😎"><br>
+                <input type="password" id="input-pw" placeholder="비밀번호를 입력해줘 🔑"><br>
+                <button id="btn-login" py-click="login_user">로그인하고 입장하기 🚀</button>
+            </div>
+            <p id="login-error" style="color: var(--accent-pink); margin-top: 10px;"></p>
+        </div>
+
+        <div id="page-main" class="page">
+            <h2>✨ 환영해, <span id="user-name-display" style="color:var(--main-purple)"></span> 학생!</h2>
+            <p>오늘의 학교 운세와 공부 꿀팁을 알아보자구 총총.. 💜</p>
+            <hr style="border: 1px solid var(--bg-purple); margin: 20px 0;">
+            <button py-click="go_to_draw">🔮 오늘의 타로 카드 뽑기</button><br>
+            <button py-click="go_to_archive">📦 나의 타로 보관함 (최근 7일)</button><br>
+            <button py-click="go_to_guide">📖 타로 카드 설명서 보기</button><br>
+            <button py-click="logout" style="background-color: #aaa; font-size:14px; padding:6px 12px;">로그아웃</button>
+        </div>
+
+        <div id="page-draw" class="page">
+            <h2>🔮 카드를 신중하게 골라봐!</h2>
+            <p>마우스로 원을 따라 카드를 살펴보며 느낌이 오는 딱 1장을 클릭해줘! ⭐</p>
+            
+            <div class="card-circle-container">
+                <div class="tar
